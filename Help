@@ -1,0 +1,936 @@
+=============================================================================
+
+      CLOC : Count Lines Of Code
+
+      Version: 1.00 (17 Jan 2021)           (C) Richard Coleman, 2021
+
+      CLOC is licensed under the terms of the MIT license.
+
+=============================================================================
+
+Written in BASIC, CLOC is a command line program which counts blank lines,
+comment lines and physical lines of code in 17 programming and scripting
+languages:
+    Ada, ASM, Awk, BASIC, C and C++, Charm, Forth, Fortran77, Lisp, Lua,
+    Makefile, Obey and TaskObey, Pascal, Python, Squeak.
+
+It provides statistics on the numbers of blank lines, comment lines and code
+lines in files that it recognises as these language files.
+
+
+INSTALLATION
+=============================================================================
+
+To install CLOC, simply place the BASIC file "cloc" in the library directory
+(Usually !Boot.Library, or under RISCOS 4: !Boot.Library.User).
+
+If you are using RISCOS 4 then put the text file "cloc" in directory "RISCOS4"
+into the Library Help directory: !Boot.Library.User.Help.
+
+
+HOW TO USE
+=============================================================================
+
+To run CLOC, open a TaskWindow and at the command prompt, type "cloc" without
+any parameters to display the syntax. It will also accept -h or -help to
+display the following syntax.
+
+Syntax: *cloc [-nowarn] [-nolist] [-noignore] [-quiet] [-stats] <file spec>
+  -nowarn      Suppress warnings
+  -nolist      Don't list individual files
+  -noignore    Don't list files that are ignored
+  -quiet       No output whilst processing files
+  -stats       Display extra stats: Max and average line lengths, and timings
+  <file spec>  File or Directory to process. Wildcards may be used
+
+-nw, -nl, and -ni can be used in place of -nowarn, -nolist and -noignore
+respectively.
+
+The Wimpslot of the TaskWindow needs to be at least 192Kb otherwise you'll get
+the error "No writable memory at this address".
+
+To process files specify the filename or directory on the command line, for
+example: "cloc c.HelloWorld" will process the file "HelloWorld" in the
+directory "c" in the currently set directory.
+To process all files in the "c" directory, just use: "cloc c" which will
+process all files and sub-directories.
+
+Wildcards may be used, for example: "cloc c.Hello*" to process all files
+beginning with "Hello".
+
+-nowarn
+-----------------------------
+Whilst it is reading a file, CLOC will perform a number of checks and issue
+warnings, such as string not terminated. To turn these warnings off, add the
+option -nowarn.
+
+Any errors reported, which will be because either CLOC has detected something
+wrong in its processing or it can't open a file or it runs out of memory, etc
+are reported regardless of whether -nowarn is specified. If an error is
+reported then CLOC will stop processing files.
+
+The only exception to this is the error: "Line counted as neither COMMENT nor
+CODE". This is the only error that does not cause CLOC to stop processing
+files. Once all the files have been processed you may also get the message:
+"Error: Line count mismatch" or "Error: Total line count mismatch".
+This error indicates there is a bug in the code as CLOC should count a
+non-blank line as either comment or code, never neither. Please let me know if
+this happens so I can fix it!
+
+-noignore
+-----------------------------
+CLOC also lists those files it has ignored because it does not recognise them,
+either because of the filetype or because it has been unable to guess the type
+of file. It will also list files and directories that are empty. To stop
+listing these files use the option -noignore.
+
+-nolist
+-----------------------------
+CLOC will list the files that it is processing as well as the directory path,
+and it will also update the display showing how much of the file it has
+processed. To turn off this listing use the option -nolist.
+
+Warnings will still be displayed unless -nowarn is also specified on the
+command line along with -nolist. Ignored files will also still be displayed
+unless -noignore is also specified on the command line.
+
+Specifying -nowarn, -nolist and -noignore will result in no display (except a
+spinning wheel so you know CLOC is doing something) until CLOC has processed
+all the files and displayed the results at the end.
+
+Please note that the spinning wheel and percentage display will not be
+updated correctly if you are using a TaskWindow provided by !Edit as !Edit
+does not handle the VDU codes used. Either use StrongEd or Zap, or use the
+-quiet option.
+
+-quiet
+-----------------------------
+Specifying -quiet will result in nothing being display, not even the spinning
+wheel, whilst processing the files. Any errors will, however, still be
+displayed.
+
+-stats
+-----------------------------
+Once all files have been processed then a break down of the languages is
+listed, giving the number of files, total number of lines, blank lines,
+comment lines and code lines per language. A percentage breakdown is also
+shown with the total of all languages. If the percentages do not equal 100%
+this will be due to rounding errors.
+
+If -stats is specified then extra information is displayed. As each file is
+processed, the line counts for that particular file are displayed (as long as
+-nolist has not been set). And once all files have been processed, CLOC will
+show how long in seconds (or centi-seconds) it took to process the files, along
+with an indication of how many lines were processed per second. Lines per
+second are only shown where processing takes at least 1 second. And for each
+language the maximum line length out of all the files for that langauge is
+shown along with the average line length of comment and code lines.
+
+
+EXAMPLES
+=============================================================================
+
+Below are two examples of using CLOC on itself, showing the extra stats
+available.
+Current directory has been set to 'SCSI::SSD.$.Develop.CountLines'
+
+
+*cloc cloc
+Count Lines Of Code 1.00 (17 Jan 2021)
+   Reading BASIC file: 'SCSI::SSD.$.Develop.CountLines.cloc' ... 100%
+
+Processed 1,795 lines
+-------------------------------------------------------------------------
+Language           Files       Lines      Blanks    Comments        Code
+  BASIC                1       1,795         235         306       1,254
+                                            13.1%       17.0%       69.9%
+
+
+*cloc cloc -stats
+Count Lines Of Code 1.00 (17 Jan 2021)
+   Reading BASIC file: 'SCSI::SSD.$.Develop.CountLines.cloc' ... 100%
+
+Processed 1,795 lines in 1.95 seconds (920.5 lines/s)
+----------------------------------------------------------------------------------
+Language           Files       Lines      Blanks    Comments        Code   MaxLen
+  BASIC                1       1,795         235         306       1,254      187
+                             Average line length:         59          30
+----------------------------------------------------------------------------------
+                                            13.1%       17.0%       69.9%
+
+
+And below, processing an application showing the different options.
+
+*cloc !textview
+Count Lines Of Code 1.00 (17 Jan 2021)
+Processing files in directory 'SCSI::SSD.$.Develop.CountLines.!textview' ...
+   Reading Obey file: '!Boot' ... 100% ** Warning: Last line not LF or CR terminated **
+   --- Ignoring unrecognised file: '!Help'
+   Reading Obey file: '!Run' ... 100% ** Warning: Last line not LF or CR terminated **
+   Reading BASIC file: '!RunImage' ... 100%
+   --- Ignoring unrecognised file: '!Sprites' (Filetype: &FF9)
+   --- Ignoring unrecognised file: 'TestText'
+   Reading BASIC file: 'TextLib' ... 100%
+
+Processed 547 lines in 4 out of 7 files
+Ignored 3 files
+-------------------------------------------------------------------------
+Language           Files       Lines      Blanks    Comments        Code
+  BASIC                2         535          89          73         373
+  Obey                 2          12           3           2           7
+-------------------------------------------------------------------------
+  Total:               4         547          92          75         380
+                                            16.8%       13.7%       69.5%
+
+
+*cloc !textview -stats
+Count Lines Of Code 1.00 (17 Jan 2021)
+Processing files in directory 'SCSI::SSD.$.Develop.CountLines.!textview' ...
+   Reading Obey file: '!Boot' ... 100% ** Warning: Last line not LF or CR terminated **
+      Counted 4 lines:  Blanks = 1  Comments = 1  Code = 2
+   --- Ignoring unrecognised file: '!Help'
+   Reading Obey file: '!Run' ... 100% ** Warning: Last line not LF or CR terminated **
+      Counted 8 lines:  Blanks = 2  Comments = 1  Code = 5
+   Reading BASIC file: '!RunImage' ... 100%
+      Counted 271 lines:  Blanks = 44  Comments = 11  Code = 216
+   --- Ignoring unrecognised file: '!Sprites' (Filetype: &FF9)
+   --- Ignoring unrecognised file: 'TestText'
+   Reading BASIC file: 'TextLib' ... 100%
+      Counted 264 lines:  Blanks = 45  Comments = 62  Code = 157
+
+Processed 547 lines in 4 out of 7 files in 52 centi-seconds
+Ignored 3 files
+-------------------------------------------------------------------------
+Language           Files       Lines      Blanks    Comments        Code   MaxLen
+  BASIC                2         535          89          73         373      155
+                             Average line length:         40          21
+  Obey                 2          12           3           2           7       64
+                             Average line length:         25          34
+----------------------------------------------------------------------------------
+  Total:               4         547          92          75         380
+                                            16.8%       13.7%       69.5%
+
+
+*cloc !textview -nowarn
+Count Lines Of Code 1.00 (17 Jan 2021)
+Processing files in directory 'SCSI::SSD.$.Develop.CountLines.!textview' ...
+   Reading Obey file: '!Boot' ... 100%
+   Reading Obey file: '!Run' ... 100%
+   Reading BASIC file: '!RunImage' ... 100%
+   Reading BASIC file: 'TextLib' ... 100%
+
+Processed 547 lines in 4 out of 7 files
+Ignored 3 files
+-------------------------------------------------------------------------
+Language           Files       Lines      Blanks    Comments        Code
+  BASIC                2         535          89          73         373
+  Obey                 2          12           3           2           7
+-------------------------------------------------------------------------
+  Total:               4         547          92          75         380
+                                            16.8%       13.7%       69.5%
+
+
+
+*cloc !textview -nowarn -stats
+Count Lines Of Code 1.00 (17 Jan 2021)
+Processing files in directory 'SCSI::SSD.$.Develop.CountLines.!textview' ...
+   Reading Obey file: '!Boot' ... 100%
+      Counted 4 lines:  Blanks = 1  Comments = 1  Code = 2
+   Reading Obey file: '!Run' ... 100%
+      Counted 8 lines:  Blanks = 2  Comments = 1  Code = 5
+   Reading BASIC file: '!RunImage' ... 100%
+      Counted 271 lines:  Blanks = 44  Comments = 11  Code = 216
+   Reading BASIC file: 'TextLib' ... 100%
+      Counted 264 lines:  Blanks = 45  Comments = 62  Code = 157
+
+Processed 547 lines in 4 out of 7 files in 52 centi-seconds
+Ignored 3 files
+-------------------------------------------------------------------------
+Language           Files       Lines      Blanks    Comments        Code   MaxLen
+  BASIC                2         535          89          73         373      155
+                             Average line length:         40          21
+  Obey                 2          12           3           2           7       64
+                             Average line length:         25          34
+----------------------------------------------------------------------------------
+  Total:               4         547          92          75         380
+                                            16.8%       13.7%       69.5%
+
+
+
+*cloc !textview -nolist
+Count Lines Of Code 1.00 (17 Jan 2021)
+** Warning: Last line not LF or CR terminated: 'SCSI::SSD.$.Develop.CountLines.!textview.!Boot'
+   --- Ignoring unrecognised file: 'SCSI::SSD.$.Develop.CountLines.!textview.!Help'
+** Warning: Last line not LF or CR terminated: 'SCSI::SSD.$.Develop.CountLines.!textview.!Run'
+   --- Ignoring unrecognised file: 'SCSI::SSD.$.Develop.CountLines.!textview.!Sprites' (Filetype: &FF9)
+   --- Ignoring unrecognised file: 'SCSI::SSD.$.Develop.CountLines.!textview.TestText'
+
+Processed 547 lines in 4 out of 7 files
+Ignored 3 files
+-------------------------------------------------------------------------
+Language           Files       Lines      Blanks    Comments        Code
+  BASIC                2         535          89          73         373
+  Obey                 2          12           3           2           7
+-------------------------------------------------------------------------
+  Total:               4         547          92          75         380
+                                            16.8%       13.7%       69.5%
+
+
+
+*cloc !textview -nolist -stats
+Count Lines Of Code 1.00 (17 Jan 2021)
+** Warning: Last line not LF or CR terminated: 'SCSI::SSD.$.Develop.CountLines.!textview.!Boot'
+   --- Ignoring unrecognised file: 'SCSI::SSD.$.Develop.CountLines.!textview.!Help'
+** Warning: Last line not LF or CR terminated: 'SCSI::SSD.$.Develop.CountLines.!textview.!Run'
+   --- Ignoring unrecognised file: 'SCSI::SSD.$.Develop.CountLines.!textview.!Sprites' (Filetype: &FF9)
+   --- Ignoring unrecognised file: 'SCSI::SSD.$.Develop.CountLines.!textview.TestText'
+
+Processed 547 lines in 4 out of 7 files in 51 cent-seconds
+Ignored 3 files
+-------------------------------------------------------------------------
+Language           Files       Lines      Blanks    Comments        Code   MaxLen
+  BASIC                2         535          89          73         373      155
+                             Average line length:         40          21
+  Obey                 2          12           3           2           7       64
+                             Average line length:         25          34
+----------------------------------------------------------------------------------
+  Total:               4         547          92          75         380
+                                            16.8%       13.7%       69.5%
+
+
+
+*cloc !textview -nolist -nowarn -stats
+Count Lines Of Code 1.00 (17 Jan 2021)
+
+Processed 547 lines in 4 out of 7 files in 51 centi-seconds
+Ignored 3 files
+----------------------------------------------------------------------------------
+Language           Files       Lines      Blanks    Comments        Code   MaxLen
+  BASIC                2         535          89          73         373      155
+                             Average line length:         40          21
+  Obey                 2          12           3           2           7       64
+                             Average line length:         25          34
+----------------------------------------------------------------------------------
+  Total:               4         547          92          75         380
+                                            16.8%       13.7%       69.5%
+
+
+LIMITATIONS
+=============================================================================
+
+This program came about as a result of a couple of comments on a ROOL forum
+about counting lines of code, and is not related in anyway with the program of
+the same name and function at github.com/AlDanial/cloc, apart from making use
+of the same table layout for displaying the information.
+
+Identifying comments must count as one of Douglas Adams' six impossible things
+to do before breakfast; it is a lot trickier than you might think. Certainly a
+lot trickier than I originally thought!
+
+Many languages would need a parser in order to count lines with 100% accuracy.
+CLOC is not a parser and so it might not be 100% accurate depending on the
+language and how the source code is formatted.
+
+There will also undoubtedly be files that it simply can't recognise. If that
+is the case then if there is a filetype then either make sure the file has that
+filetype instead of Text (&FFF) or Data (&FFD), or append the filetype to the
+end of the filename (eg: "BasicFile,ffb").
+
+If a filetype is not available, other than Text or Data then make the first
+line in the file be a comment line.
+
+This Limitations section and the How It Works section below should enable you
+to set the file so that CLOC can recognise and process files correctly.
+
+
+First we need to define exactly what it is that CLOC counts.
+
+CLOC counts physical lines, as opposed to logical lines, of code.
+
+A physical line of code is defined as "a line ending in a newline or end of file
+marker, and which contains at least one non-whitespace non-comment character"
+(dwheeler.com/sloccount/sloccount.html).
+
+A logical line of code is defined as an executable statement
+(en.wikipedia.org/wiki/Source_lines_of_code).
+
+So, for example, this line in BASIC:
+    FOR i% = 1 TO 10 : PRINT "Hello World!" : NEXT : REM This prints Hello World 10 times
+is one physical line, but three logical lines of code and one logical comment
+line.
+
+In this example (from "en.wikipedia.org/wiki/Source_lines_of_code"):
+    /* Now how many lines of code is this? */
+    for (i = 0; i < 100; i++)
+    {
+        printf("hello");
+    }
+we have four physical lines of code, two logical lines of code (does not
+include "{" and "}") and one comment line.
+
+Similarly, some languages allow a line to continue on to the next line with
+the use of a continuation mark ("\" in C/C++ and "&" in Fortran77). These are
+ignored by CLOC and each line is counted as a separate line as CLOC counts
+physical lines rather than logical lines.
+
+So, for example, this in Fortran:
+    A = 174.5 * Year   &
+        + Count / 100
+is counted as two physical lines even though it is one logical line of code.
+It is equivalent to:
+    A = 174.5 * Year   + Count / 100
+
+
+Comment lines are lines that only contain one or more comments. Lines containing
+both code and comments are counted as a code line.
+
+So, for example, this line in Pascal:
+    { This is a comment at the start of the line } WriteLn('followed by some code'); (* And ending with another comment *)
+will be counted as a code line by CLOC.
+
+
+Lines which consists only of whitespace characters (space and tab) and statement
+separator characters are counted as blank lines. Blank lines inside a multi-line
+comment are counted as blank lines and not as comment lines.
+
+
+If one language is embedded in another, for example assembly code in a higher
+level language such as C, this will not be recognised if the embdedded language
+uses different comment constructs from the containing language. BASIC and Charm
+are the only exceptions to this.
+
+In Charm, the semi-colon character is used as a statement separator and as a
+comment character in the inline assembler. CLOC counts a semi-colon at the
+start of a line as an assembler comment.
+
+In Python, strings can be strings or they can be comments and it is the context
+that depends on how Python interprets them. CLOC handles this as best it can by
+counting strings at the start of a line as comments otherwise it counts them as
+code.
+
+Conditional code (eg #if..#endif) which is often used to stop code from being
+compiled is treated as normal code. C pre-processor lines are considered as
+normal C code. Similarly compiler directives, if they use the comment markers
+are treated as comments, otherwise as code. This can cause a problem if a line
+which the compiler would not process, because of a directive or a conditional,
+contains a syntax error, such as a string not being terminated, because it will
+still be processed by CLOC, and will either cause a warning to be reported, if
+the language does not support multi-line strings, or for the counting to go
+horribly wrong if it does.
+For example:
+    #if FALSE
+        string = "compiler will ignore this line and won't report the non-terminated string, but CLOC won't
+    #else
+        string = "This string is fine"
+    #endif
+
+C and C++ files are not treated separately but are counted towards the "C/C++"
+language count. And so the comment "//" is recognised in both C and C++ files.
+
+Python 2 and Python 3 files, whilst recognised by their different filetypes are
+also counted towards the "Python" language count. They are not differentiated.
+
+Lua files can have a shebang (#!) at the start of a file to identify it as a Lua
+file, for example: #!Lua
+
+Other languages that use shebangs, such as Awk and Python, already use the hash
+(#) character as a comment character, but Lua does not. And so Lua has an
+exception to enable it to count the shebang line as a comment line. Whilst it is
+expected that the shebang will only appear once on the very first line, any "#!"
+at the start of a line will be counted as a comment line in Lua files.
+The shebang check is case insensitive.
+
+
+HOW IT WORKS
+=============================================================================
+
+CLOC uses a number of different ways to try and identify the language of a
+file.
+
+The first is by the filetype of the file, which includes the filetype attached
+to the end of the filename as a HostFS extension ",xxx"
+
+Many languages, especially those that are compiled, do not have their own
+filetype and are usually typed as Text files.
+
+If the filetype is Text (&FFF), Data (&FFD) or is untyped, then CLOC will
+examine the first few characters of the file to see if it can guess the
+language.
+
+It will also look at the parent directory, which will override the guess
+(eg "c.HelloWorld") will mean HelloWorld is treated as C/C++. The parent
+directory is commonly the file extension used under other Operating Systems.
+
+And then finally it will see if the file has an extension at the end of the
+filename, which will override the parent directory (eg "HelloWorld/c").
+
+See the Language Details section below for specific languages.
+
+
+Specific Text files are ignored regardless of the guess or parent directory.
+Files named: "!Help", "!ReadMe", "Help", "Messages", "ReadMe" are ignored.
+
+Image files are also ignored. To process an Image file as a directory use:
+    cloc new/zip.*
+You will need the application that understands the Image file (Eg !SparkFS)
+loaded in order to do this otherwise it will report that there are no files.
+Depending on whether the relevant application is loaded will depend on whether
+CLOC will recongise the file as an Image file or as an ordinary file.
+
+
+If possible the whole file is read into a buffer (Initially set to 64Kb), if
+not the buffer is resized to the size of the file. If that is not possible
+then the buffer is set to half the file size. If that also fails then the file
+is read in 64Kb chunks. The buffer is claimed by creating a heap in the Wimpslot
+so make sure that the Wimpslot of the TaskWindow is at least 192Kb otherwise
+you'll get the error "No writable memory at this address".
+
+Individual characters are read from the buffer until an EOL character is found.
+CLOC can cope with LF (UNIX/RISC OS), CR (Mac), CRLF (MSDOS), LFCR (OS_NewLine)
+line endings.
+
+Tab characters are converted to a single space.
+
+With the exception of Fortran77, spaces and statement separators at the start
+of a line are ignored, as are double spaces and double separators, which helps
+to reduce the length of the line that needs to be checked. This is especially
+effective in comment lines which often include multiple spaces. Spaces and
+statement separators at the end of the line are also removed.
+
+Because statement separators are removed from the start of the line, it means
+that lines which only contain the separator character will be counted as blank
+lines.
+
+The characters read are stored in the line buffer which is 1024 bytes which
+should be enough, but if not it is automatically increased to 2048 bytes by
+taking memory from the Heap.
+
+Once the line has been read, or the End Of File (EOF) has been reached, the
+line is then processed to determine if it is a blank line, a comment or code
+line.
+
+
+Fortran77 comments are checked first, then Charm inline assembler comments.
+And then CLOC looks for a shebang (#!) at the start of the line if the language
+specifies shebangs. This is currently only used by Lua.
+
+Then CLOC looks for a single line comment at the start of the line, unless it's
+already in a multi-line string or comment, because of a previous line, or it's
+processing a Lua file (Lua multi-line comment and single line comments both
+start with "--").
+
+And then CLOC checks each character in the line by working through these steps:
+1. If not already in a string or multi-line comment then see if CLOC has found
+   the start of a string.
+   If not in a string then goto step 3.
+2. CLOC is in a string so look for end of string or EOL.
+   If found end of string and not EOL then get next character and goto step 1.
+3. If not already in a mutli-line comment then see if CLOC has found the start
+   of a multi-line comment.
+   If in a multi-line comment then goto step 5.
+4. If not start of a multi-line comment then see if CLOC has found the start of
+   a single line comment.
+   If not in a multi-line comment and not EOL then get next character and goto
+   step 1.
+5. CLOC is in a multi-line comment, and if nested comments allowed then look
+   for the start of another multi-line comment.
+   After checking for a nested comment, see if CLOC has found the end of a
+   multi-line comment.
+   If still in a multi-line comment then repeat step 5 else get next character
+   and goto step 1.
+
+Once the line has been processed, get the next line and repeat until EOF.
+
+CLOC can handle comment characters in strings and treats them as part of the
+string. Many languages allow characters to be escaped with the "\" character
+(eg "\n"); CLOC can handle these as well as well as escaped quotes within a
+string (eg '\'').
+
+
+LANGUAGE DETAILS
+=============================================================================
+
+Listed below are the settings for each language along with notes about its
+implementation as well as any language specific warnings that may be reported.
+
+Warnings that may be reported for all languages are:
+    1. "Last line not LF or CR terminated"
+    2. "String is not terminated"
+       CLOC has reached the end of the line without finding the closing string
+       delimiter.
+    3. "EOF reached and multi-line comment is not terminated"
+    4. "EOF reached and string is not terminated"
+
+
+Ada
+-----------------------------
+Filetype: No
+Guess looks for: --
+Extensions: /adb, /ads
+Parent dir: adb, ads
+Single line comment: --
+Multi-line comments: No
+Statement separator: No
+String delimiters: ""
+Multi-line strings: No
+Escaped characters in strings: No
+
+Notes:
+Ada does have single quotes which enclose a single character (eg '*'), so it
+won't have comments in them, so they are ignored.
+
+
+ASM (extASM)
+-----------------------------
+Filetype: &725
+Guess looks for: No guess made
+Extensions: No
+Parent dir: No
+Single line comment: ;
+Multi-line comments: No
+Statement separator: No
+String delimiters: "" and ''
+Multi-line strings: Yes
+Escaped characters in strings: Yes, character = |
+
+
+ASM (ObjAsm and ASM)
+-----------------------------
+Filetype: No
+Guess looks for: ;
+Extensions: /s
+Parent dir: s
+Single line comment: ;
+Multi-line comments: No
+Statement separator: No
+String delimiters: "" and ''
+Multi-line strings: No
+Escaped characters in strings: Yes
+
+Notes:
+ASM is used for stand alone Assemblers such as ObjAsm and ASM.
+
+
+Awk
+-----------------------------
+Filetype: &187
+Guess looks for: "#!awk" or "#!/usr/bin/awk" or "#!/usr/bin/env awk"
+Extensions: /awk
+Parent dir: awk
+Single line comment: #
+Multi-line comments: No
+Statement separator: ;
+String delimiters: ""
+Multi-line strings: No
+Escaped characters in strings: Yes
+
+Notes:
+Can have spaces after the shebang "#!" and it is case insensitive.
+
+
+BASIC
+-----------------------------
+Filetype: &FFB (Tokenised) or &FD1 (Text)
+Guess looks for: REM (&FD1). See notes below for tokenised files
+Extensions: /bas
+Parent dir: bas
+Single line comment: &F4 (&FFB) and REM (&FD1)
+Multi-line comments: Two, not nested and only in the Assembler, see notes below
+    1. Begins: ;  Ends: :
+    2. Begins: \  Ends: :
+Statement separator: :
+String delimiters: ""
+Multi-line strings: No
+Escaped characters in strings: No
+Warnings:
+    1. "Ignoring file (Too small for a BASIC program)"
+       The smallest size for a tokenised BASIC file is 6 bytes. This message
+       means that the file has the filetype &FFB but is smaller than 6 bytes.
+    2. "Not a BASIC program"
+       The file has the filetype &FFB but the first byte is not &0D.
+    3. "Indexed Address is missing ']'"
+       When in the Assembler, CLOC checks for a closing square bracket for
+       instructions that use indexed addressing (eg  LDR r0,[r1]). This error
+       is reported if CLOC has reached the end of the line or found a colon but
+       has not found the closing square bracket.
+    4. "Extra bytes after EOF marker"
+       The file has the filetype &FFB and CLOC has reached the End Of File (EOF)
+       marker but there are more bytes to be read. Characters after the EOF
+       marker are not processed.
+    5. "EOF marker missing"
+       The file has the filetype &FFB and CLOC has reached the end of the file
+       without finding the EOF marker.
+    6. "EOF reached and Assembler is not terminated"
+       CLOC has reached the end of the file without finding the closing square
+       bracket that indicates the end of the Assembler.
+
+Notes:
+Comment check for "REM" is case sensitive.
+
+For tokenised BASIC (&FFB) when guessing and when checking the extension and
+parent, it also checks that the file is 6 bytes or more in size, that the first
+two bytes are &0D and &00 and that the last byte is &FF.
+
+The characters "*|" are also treated as a comment and there may be spaces
+between the "*" and "|". This is handled as an exception.
+
+CLOC only checks for the Assembler multi-line comments when the character "["
+is detected to indicate the start of the Assembler, with "]" marking the end of
+the Assembler. It can cope with assembler statements such as LDR r0, [r1,#4].
+
+Whilst the Assembler comments are specified as multi-line comments they do not
+actually span more than one line; the comment ends either at a colon or the EOL.
+
+
+C/C++ and CMHG
+-----------------------------
+Filetype: No
+Guess looks for: /* or //
+Extensions: /c, /h, /c++, /h++, /cpp, /hpp, /cc
+Parent dir: c, h, c++, h++, cpp, hpp, cc
+Single line comment: //
+Multi-line comments: One, not nested
+    1. Begins: /*  Ends: */
+Statement separator: ;
+String delimiters: "" and ''
+Multi-line strings: Yes
+Escaped characters in strings: Yes
+
+
+CMHG files are counted as C/C++ files but have different settings:
+Filetype: No
+Guess looks for: No guess made
+Extensions: No
+Parent dir: cmhg
+Single line comment: ;
+Multi-line comments: No
+Statement separator: No
+String delimiters: ""
+Multi-line strings: No
+Escaped characters in strings: Yes
+
+
+Charm
+-----------------------------
+Filetype: No
+Guess looks for: |
+Extensions: No
+Parent dir: No
+Single line comment: No
+Multi-line comments: One, not nested
+    1. Begins: |  Ends: |
+Statement separator: No
+String delimiters: "" and ''
+Multi-line strings: No
+Escaped characters in strings: Yes
+Warnings:
+    1. "Comment is not terminated"
+       CLOC has reached the end of the line without finding the closing comment
+       delimiter.
+
+Notes:
+The inline assembler uses the semi-colon as a single line comment character.
+However semi-colons are also used as the statement separator with no easy way
+to distinguish between them, and so if a semi-colon is found at the start of a
+line it is assumed to be an inline assembler comment.
+
+Whilst the comments are specified as multi-line comments they are not actually
+multi-line.
+
+
+Forth
+-----------------------------
+Filetype: &D72
+Guess looks for: "\ " or "( "
+Extensions: /f
+Parent dir: f
+Single line comment: "\ "
+Multi-line comments: Two, not nested
+    1. Begins: ".( "  Ends: )
+    2. Begins: "( "   Ends: )
+Statement separator: No
+String delimiters: ""
+Multi-line strings: No
+Escaped characters in strings: No
+
+Notes:
+According to one spec Forth comments aren't actually multi-line, but it looks
+like that depends on the compiler as I have come across code that uses them as
+multi-line comments, so CLOC treats them as truly multi-line.
+
+The opening comment ".( ", which is a compilation comment that gets printed
+during compilation, can't be caught by using "( " as the preceding fullstop
+will cause the comment to be counted as code, which is why it has to be checked
+for separately.
+
+
+Fortran77
+-----------------------------
+Filetype: No
+Guess looks for: C or c
+Extensions: /f77, /for
+Parent dir: f77
+Single line comment: C or c or * in column 1 only
+Multi-line comments: No
+Statement separator: No
+String delimiters: ""
+Multi-line strings: Yes
+Escaped characters in strings: No
+
+Notes:
+Fortran77 is sensitive to character position; comment characters are only
+allowed in column 1.
+
+
+Lisp
+-----------------------------
+Filetype: &D23
+Guess looks for: No guess made
+Extensions: /lisp
+Parent dir: lisp
+Single line comment: ;
+Multi-line comments: One, nested
+    1. Begins: #|  Ends: |#
+Statement separator: No
+String delimiters: ""
+Multi-line strings: Yes
+Escaped characters in strings: Yes
+
+
+Lua
+-----------------------------
+Filetype: &18C
+Guess looks for: "#!lua" or "#!/usr/bin/lua" or "#!/usr/bin/env lua"
+Extensions: /lua
+Parent dir: lua
+Single line comment: --
+Multi-line comments: Two, not nested
+    1. Begins: --[[  Ends: ]]
+    2. Begins: --[=  Ends: =]
+Statement separator: ;
+String delimiters: "" and '' and [[]]
+Multi-line strings: Yes
+Escaped characters in strings: Yes
+
+Notes:
+Can have spaces after the shebang "#!" and it is case insensitive.
+Comments and strings can have zero or more equals signs between the square
+brackets. Having looked at some source code it seems that no equals signs
+between the brackets are fairly common hence why there are two sets of
+multi-line comments as this saves CLOC having to look for equals signs every
+time.
+
+
+Makefile
+-----------------------------
+Filetype: &FE1
+Guess looks for: "#!make" or "#!/usr/bin/make" or "#!/usr/bin/env make"
+                 or filename = "makefile"
+Extensions: No
+Parent dir: Filename = "makefile" in c, h, c++, h++, cpp, hpp, cc
+Single line comment: #
+Multi-line comments: No
+Statement separator: ;
+String delimiters: "" and ''
+Multi-line strings: No
+Escaped characters in strings: Yes
+
+Notes:
+Can have spaces after the shebang "#!" and it is case insensitive.
+The shebang guess only looks for the first four characters to match "make".
+
+
+Obey and TaskObey
+-----------------------------
+Filetype: &FEB (Obey) or &FD7 (TaskObey)
+Guess looks for: No guess made
+Extensions: No
+Parent dir: No
+Single line comment: |
+Multi-line comments: No
+Statement separator: *
+String delimiters: ""
+Multi-line strings: No
+Escaped characters in strings: No
+
+Notes:
+The characters "*|" are treated as a comment and there may be spaces between
+the "*" and "|". This is handled by setting "*" as the statement separator
+character so that it is removed at the start of the line along with any spaces
+to leave the "|" which is the comment character and so it is correctly treated
+as a comment.
+
+
+Pascal
+-----------------------------
+Filetype: No
+Guess looks for: (* or {
+Extensions: /p, /pas
+Parent dir: p, pas
+Single line comment: No
+Multi-line comments: Two, not nested
+    1. Begins: (*  Ends: *)
+    2. Begins: {   Ends: }
+Statement separator: ;
+String delimiters: ''
+Multi-line strings: No
+Escaped characters in strings: No
+
+Notes:
+Pascal comments can start with "{" and end with "*)" and vice versa.
+
+
+Python
+-----------------------------
+Filetype: &AE5 (Python 2) or &A73 (Python 3)
+Guess looks for: # or """ or '''
+Extensions: /py
+Parent dir: py
+Single line comment: #
+Multi-line comments: Four, not nested
+    1. Begins: """  Ends: """
+    2. Begins: '''  Ends: '''
+    3. Begins: "    Ends: "
+    4. Begins: '    Ends: '
+Statement separator: No
+String delimiters: "" and ''
+Multi-line strings: Yes
+Escaped characters in strings: Yes
+
+Notes:
+Python files can make use of a shebang, but this is not used for guessing as
+the guess defaults to Python if it finds a "#" anyway.
+
+If a string is on the left hand side of a statement then it is considered a
+comment, otherwise as a string. This can be difficult for CLOC to determine, so
+CLOC takes the view that if the string is at the start of a line then it is
+counted as a comment, otherwise it is counted as a string and hence as code.
+
+
+Squeak
+-----------------------------
+Filetype: No
+Guess looks for: " as first character and second character is not "
+Extensions: No
+Parent dir: No
+Single line comment: No
+Multi-line comments: One, not nested
+    1. Begins: "  Ends: "
+Statement separator: .
+String delimiters: ''
+Multi-line strings: No
+Escaped characters in strings: No
+
+Notes:
+The guess checks that the second character is not " otherwise it could get
+confused with a Python docstring """
+
+
+SUPPORT
+=============================================================================
+
+For support queries or any other help with this software, please contact:
+    coleman@orpheusmail.co.uk
+
+
+=============================================================================

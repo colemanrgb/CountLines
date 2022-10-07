@@ -1,0 +1,11 @@
+cloc	1.00 (17 Jan 2021)
+*cloc is a program for counting lines of code. It provides statistics on numbers of blank lines, comment lines and code lines in files that it recognises as source code.
+Syntax: *cloc [-help] [-nowarn] [-nolist] [-noignore] [-quiet] [-stats] <file spec>
+
+  -help		Display this help
+  -nowarn	Suppress warnings
+  -nolist	Don't list individual files
+  -noignore	Don't list files that are ignored
+  -quiet	No output whilst processing files
+  -stats	Display extra stats: Max and average line lengths, and timings
+  <file spec>	File or Directory to process. Wildcards may be used
